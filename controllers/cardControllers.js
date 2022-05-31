@@ -15,8 +15,8 @@ const updateCard = async (req, res) => {
 };
 
 const getAllCards = async (req, res) => {
-    const card = await Card.find(req.query);
-    return res.json({ status: 'success', data: card });
+    const cards = await Card.find(req.query);
+    return res.json({ status: 'success', data: cards });
 };
 
 const postCard = async (req, res) => {
