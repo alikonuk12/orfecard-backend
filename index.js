@@ -11,7 +11,7 @@ mongoose.connect(database);
 
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-//app.use('/api', API);
+app.use('/api', API);
 
 app.get('/', (req, res) => {
     res.send('You are not allow to display page. Please contact with Administration');
