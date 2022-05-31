@@ -1,5 +1,5 @@
 const express = require('express');
-const cardRouter = express.Router();
+const orderHistoryRouter = express.Router();
 
 const {
     getOrderHistory,
@@ -8,14 +8,14 @@ const {
     postOrderHistory
 } = require('../controllers/orderHistoryControllers');
 
-cardRouter
+orderHistoryRouter
     .route('/')
     .get(getAllOrderHistories)
     .post(postOrderHistory);
 
-cardRouter
+orderHistoryRouter
     .route('/:id')
     .get(getOrderHistory)
     .put(updateOrderHistory);
 
-module.exports = cardRouter;
+module.exports = orderHistoryRouter;
