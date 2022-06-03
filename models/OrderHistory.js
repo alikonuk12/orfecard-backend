@@ -14,22 +14,13 @@ const orderHistorySchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'Card',
         required: [true, 'Card field is required'],
+        unique: [true, 'Card field must be unique']
     },
     createdAt: {
         type: Date,
         required: [true, 'Created At field is required'],
         default: Date.now()
-    },
-    activate: {
-        type: Boolean,
-        default: true,
-        select: false
     }
-});
-
-orderHistorySchema.pre(/^find/, function (next) {
-    this.find({ activate: true });
-    next();
 });
 
 module.exports = mongoose.model('OrderHistory', orderHistorySchema);

@@ -1,4 +1,4 @@
-const Admin = require('./Admin');
+const Account = require('./Account');
 const Personal = require('./Card');
 const Business = require('./Business');
 const CardOwnerInfo = require('./CardOwnerInfo');
@@ -6,7 +6,7 @@ const Card = require('./Card');
 const OrderHistory = require('./OrderHistory');
 
 module.exports = {
-    Admin,
+    Account,
     Personal,
     Business,
     CardOwnerInfo,

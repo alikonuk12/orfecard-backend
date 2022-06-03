@@ -21,6 +21,9 @@ const cardSchema = new mongoose.Schema({
             message: 'This type cannot be given'
         }
     },
+    image: {
+        type: String
+    },
     createdAt: {
         type: Date,
         required: [true, 'Created At field is required'],

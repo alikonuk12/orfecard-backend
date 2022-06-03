@@ -115,7 +115,12 @@ const cardOwnerInfoSchema = new mongoose.Schema({
         type: String,
         unique: [true, 'Çiçek Sepeti field must be unique'],
         lowercase: [true, 'Çiçek Sepeti field must be lowercase']
-    }, 
+    },
+    createdAt: {
+        type: Date,
+        required: [true, 'Created At field is required'],
+        default: Date.now()
+    },
     activate: {
         type: Boolean,
         default: true,
