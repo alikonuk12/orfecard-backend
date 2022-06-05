@@ -16,9 +16,9 @@ const accountSchema = new mongoose.Schema({
         maxlength: [20, 'Password must be smaller than or equal to 20'],
         select: false
     },
-    type: {
+    role: {
         type: String,
-        required: [true, 'Type field is required'],
+        required: [true, 'Role field is required'],
         enum: {
             values: ['Admin', 'Personal', 'Business'],
             message: 'This type cannot be given'
@@ -33,12 +33,21 @@ const accountSchema = new mongoose.Schema({
         type: Boolean,
         default: true,
         select: false
-    }
+    },
+    passwordChangedAt: {
+        type: Date
+    },
+    passwordResetToken: {
+        type: String
+    },
+    passwordResetExpires: {
+        type: Date
+    },
 });
 
 accountSchema.pre('save', async function (next) {
     if (!this.isModified('password')) return next();
-    this.password = await bcrypt.hash(this.password, process.env.SALT);
+    this.password = await bcrypt.hash(this.password, 12);
     next();
 });
 
@@ -55,7 +64,7 @@ accountSchema.methods.changedPasswordAfter = async function (JWTTimestamp) {
 }
 
 accountSchema.methods.createPasswordResetToken = function () {
-    const resetToken = crypto.randomBytes(process.env.CRYPTO_GEN_RAND_NUM).toString('hex');
+    const resetToken = crypto.randomBytes(32).toString('hex');
     this.passwordResetToken = crypto.createHash(process.env.CRYPTO_ALGORITHM_METHOD).update(resetToken).digest('hex');
     this.passwordResetExpires = Date.now() + 10 * 60 * 1000;
     return resetToken;

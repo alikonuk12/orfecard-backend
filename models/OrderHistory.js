@@ -16,6 +16,15 @@ const orderHistorySchema = new mongoose.Schema({
         required: [true, 'Card field is required'],
         unique: [true, 'Card field must be unique']
     },
+    status: {
+        type: String,
+        required: [true, 'Status field is required'],
+        enum: {
+            values: ['Alındı', 'Yolda', 'Teslim Edildi'],
+            message: 'This type cannot be given'
+        },
+        default: 'Alındı'
+    },
     createdAt: {
         type: Date,
         required: [true, 'Created At field is required'],

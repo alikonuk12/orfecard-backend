@@ -1,28 +1,48 @@
 const { Card } = require('../models');
 
 const getCard = async (req, res) => {
-    const { id } = req.params;
-    const card = await Card.findById(id);
-    if (!card) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: card });
+    try {
+        const { id } = req.params;
+        const card = await Card.findById(id);
+        if (!card) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: card });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const updateCard = async (req, res) => {
-    const { id } = req.params;
-    const card = await Card.findByIdAndUpdate(id, req.body, { new: true });
-    if (!card) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: card });
+    try {
+        const { id } = req.params;
+        const card = await Card.findByIdAndUpdate(id, req.body, { new: true });
+        if (!card) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const getAllCards = async (req, res) => {
-    const cards = await Card.find(req.query);
-    return res.json({ status: 'success', data: cards });
+    try {
+        const cards = await Card.find(req.query);
+        return res.json({ status: 'success', data: cards });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const postCard = async (req, res) => {
-    const card = await Card.create(req.body);
-    if (!card) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: card });
+    try {
+        const card = await Card.create(req.body);
+        if (!card) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 module.exports = {

@@ -1,5 +1,5 @@
 const Account = require('./Account');
-const Personal = require('./Card');
+const Personal = require('./Personal');
 const Business = require('./Business');
 const CardOwnerInfo = require('./CardOwnerInfo');
 const Card = require('./Card');

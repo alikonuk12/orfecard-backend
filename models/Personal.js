@@ -14,6 +14,7 @@ const personalSchema = new mongoose.Schema({
     },
     TCKN: {
         type: Number,
+        required: [true, 'TCKN field is required'],
         unique: [true, 'TCKN field must be unique']
     }
 });

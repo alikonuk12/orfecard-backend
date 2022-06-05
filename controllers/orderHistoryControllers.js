@@ -1,28 +1,48 @@
 const { OrderHistory } = require('../models');
 
 const getOrderHistory = async (req, res) => {
-    const { id } = req.params;
-    const orderHistory = await OrderHistory.findById(id);
-    if (!orderHistory) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: orderHistory });
+    try {
+        const { id } = req.params;
+        const orderHistory = await OrderHistory.findById(id);
+        if (!orderHistory) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: orderHistory });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const updateOrderHistory = async (req, res) => {
-    const { id } = req.params;
-    const orderHistory = await OrderHistory.findByIdAndUpdate(id, req.body, { new: true });
-    if (!orderHistory) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: orderHistory });
+    try {
+        const { id } = req.params;
+        const orderHistory = await OrderHistory.findByIdAndUpdate(id, req.body, { new: true });
+        if (!orderHistory) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const getAllOrderHistories = async (req, res) => {
-    const orderHistories = await OrderHistory.find(req.query);
-    return res.json({ status: 'success', data: orderHistories });
+    try {
+        const orderHistories = await OrderHistory.find(req.query);
+        return res.json({ status: 'success', data: orderHistories });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 const postOrderHistory = async (req, res) => {
-    const orderHistory = await OrderHistory.create(req.body);
-    if (!orderHistory) return res.json({ status: 'failure' });
-    return res.json({ status: 'success', data: orderHistory });
+    try {
+        const orderHistory = await OrderHistory.create(req.body);
+        if (!orderHistory) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
 };
 
 module.exports = {
