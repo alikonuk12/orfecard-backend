@@ -8,13 +8,13 @@ const sendEmail = async options => {
         port: 587,
         secure: false,
         auth: {
-            user: "alikonuk12@gmail.com",
-            pass: "irexzzvwhyapavmm"
+            user: "orfecard@gmail.com",
+            pass: "pygatfkymboljipu"
         }
     });
 
     const mailOptions = {
-        from: 'OrfeCard <alikonuk12@gmail.com>',
+        from: 'OrfeCard <orfecard@gmail.com>',
         to: options.email,
         subject: options.subject,
         html: options.message

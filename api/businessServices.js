@@ -8,14 +8,19 @@ const {
     postBusiness
 } = require('../controllers/businessControllers');
 
+const {
+    protect,
+    restrictTo
+} = require('../controllers/accountControllers');
+
 businessRouter
     .route('/')
-    .get(getAllBusinesses)
-    .post(postBusiness);
+    .get(protect, restrictTo('Admin'), getAllBusinesses)
+    .post(protect, restrictTo('Business'), postBusiness);
 
     businessRouter
     .route('/:id')
-    .get(getBusiness)
-    .put(updateBusiness);
+    .get(protect, restrictTo(['Business', 'Admin']), getBusiness)
+    .put(protect, restrictTo(['Business', 'Admin']), updateBusiness);
 
 module.exports = businessRouter;

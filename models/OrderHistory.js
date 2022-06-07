@@ -20,7 +20,7 @@ const orderHistorySchema = new mongoose.Schema({
         type: String,
         required: [true, 'Status field is required'],
         enum: {
-            values: ['Alındı', 'Yolda', 'Teslim Edildi'],
+            values: ['Alındı', 'Baskıda', 'Yolda', 'Teslim Edildi'],
             message: 'This type cannot be given'
         },
         default: 'Alındı'

@@ -8,14 +8,19 @@ const {
     postPersonal
 } = require('../controllers/personalControllers');
 
+const {
+    protect,
+    restrictTo
+} = require('../controllers/accountControllers');
+
 personalRouter
     .route('/')
-    .get(getAllPersonals)
-    .post(postPersonal);
+    .get(protect, restrictTo('Admin'), getAllPersonals)
+    .post(protect, restrictTo('Personal'), postPersonal);
 
 personalRouter
     .route('/:id')
-    .get(getPersonal)
-    .put(updatePersonal);
+    .get(protect, restrictTo(['Personal', 'Admin']), getPersonal)
+    .put(protect, restrictTo(['Personal', 'Admin']), updatePersonal);
 
 module.exports = personalRouter;

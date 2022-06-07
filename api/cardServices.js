@@ -8,14 +8,19 @@ const {
     postCard
 } = require('../controllers/cardControllers');
 
+const {
+    protect,
+    restrictTo
+} = require('../controllers/accountControllers');
+
 cardRouter
     .route('/')
-    .get(getAllCards)
-    .post(postCard);
+    .get(protect, getAllCards)
+    .post(protect, restrictTo(['Personal', 'Business']), postCard);
 
 cardRouter
     .route('/:id')
-    .get(getCard)
-    .put(updateCard);
+    .get(protect, getCard)
+    .put(protect, restrictTo(['Business, Personal']), updateCard);
 
 module.exports = cardRouter;

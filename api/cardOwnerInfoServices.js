@@ -8,14 +8,19 @@ const {
     postCardOwnerInfo
 } = require('../controllers/cardOwnerInfoControllers');
 
+const {
+    protect,
+    restrictTo
+} = require('../controllers/accountControllers');
+
 cardOwnerInfoRouter
     .route('/')
-    .get(getAllCardOwnerInfos)
-    .post(postCardOwnerInfo);
+    .get(protect, restrictTo(['Business', 'Admin']), getAllCardOwnerInfos)
+    .post(protect, restrictTo(['Business', 'Personal']), postCardOwnerInfo);
 
 cardOwnerInfoRouter
     .route('/:id')
-    .get(getCardOwnerInfo)
-    .put(updateCardOwnerInfo);
+    .get(protect, getCardOwnerInfo)
+    .put(protect, restrictTo(['Business', 'Personal']), updateCardOwnerInfo);
 
 module.exports = cardOwnerInfoRouter;

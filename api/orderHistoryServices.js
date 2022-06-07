@@ -8,14 +8,19 @@ const {
     postOrderHistory
 } = require('../controllers/orderHistoryControllers');
 
+const {
+    protect,
+    restrictTo
+} = require('../controllers/accountControllers');
+
 orderHistoryRouter
     .route('/')
-    .get(getAllOrderHistories)
-    .post(postOrderHistory);
+    .get(protect, getAllOrderHistories)
+    .post(protect, restrictTo(['Personal', 'Business']), postOrderHistory);
 
 orderHistoryRouter
     .route('/:id')
-    .get(getOrderHistory)
-    .put(updateOrderHistory);
+    .get(protect, getOrderHistory)
+    .put(protect, updateOrderHistory);
 
 module.exports = orderHistoryRouter;

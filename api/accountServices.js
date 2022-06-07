@@ -9,8 +9,7 @@ const {
     updatePassword,
     deleteUser,
     logout,
-    protect,
-    restrictTo
+    protect
 } = require('../controllers/accountControllers');
 
 accountRouter
