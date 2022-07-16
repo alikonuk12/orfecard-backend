@@ -86,9 +86,9 @@ const cardOwnerInfoSchema = new mongoose.Schema({
         type: String,
         lowercase: [true, 'Trendyol field must be lowercase']
     },
-    gittigidiyor: {
+    trendyolYemek: {
         type: String,
-        lowercase: [true, 'Gittigidiyor field must be lowercase']
+        lowercase: [true, 'Trendyol Yemek field must be lowercase']
     },
     amazon: {
         type: String,
@@ -101,6 +101,30 @@ const cardOwnerInfoSchema = new mongoose.Schema({
     cicekSepeti: {
         type: String,
         lowercase: [true, 'Çiçek Sepeti field must be lowercase']
+    },
+    getir: {
+        type: String,
+        lowercase: [true, 'Getir field must be lowercase']
+    },
+    etsTur: {
+        type: String,
+        lowercase: [true, 'Ets Tur field must be lowercase']
+    },
+    hepsiburada: {
+        type: String,
+        lowercase: [true, 'Hepsiburada field must be lowercase']
+    },
+    letgo: {
+        type: String,
+        lowercase: [true, 'Letgo field must be lowercase']
+    },
+    pinterest: {
+        type: String,
+        lowercase: [true, 'Pinterest field must be lowercase']
+    },
+    grupanya: {
+        type: String,
+        lowercase: [true, 'Grupanya field must be lowercase']
     },
     createdAt: {
         type: Date,
