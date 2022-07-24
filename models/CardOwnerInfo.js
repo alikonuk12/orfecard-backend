@@ -27,13 +27,9 @@ const cardOwnerInfoSchema = new mongoose.Schema({
         unique: [true, 'Email field must be unique'],
         lowercase: [true, 'Email field must be lowercase']
     },
-    business: {
+    account: {
         type: ObjectId,
-        ref: 'Business',
-    },
-    personal: {
-        type: ObjectId,
-        ref: 'Personal',
+        ref: 'Account',
     },
     website: {
         type: String

@@ -16,11 +16,42 @@ const accountSchema = new mongoose.Schema({
         maxlength: [20, 'Password must be smaller than or equal to 20'],
         select: false
     },
+    phoneNumber: {
+        type: String,
+        required: [true, 'Phone Number field is required'],
+        unique: [true, 'Phone Number field must be unique']
+    },
+    website: {
+        type: String
+    },
+    address: {
+        type: String,
+        required: [true, 'Address field is required'],
+    },
+    taxAdministration: {
+        type: String,
+        required: [true, 'Tax Administration field is required'],
+    },
+    taxNumber: {
+        type: String
+    },
+    TCKN: {
+        type: Number
+    },
+    companyTitle: {
+        type: String
+    },
+    landlineNumber: {
+        type: String
+    },
+    extNumber: {
+        type: String
+    },
     role: {
         type: String,
         required: [true, 'Role field is required'],
         enum: {
-            values: ['Admin', 'Personal', 'Business'],
+            values: ['Admin', 'Client'],
             message: 'This type cannot be given'
         }
     },

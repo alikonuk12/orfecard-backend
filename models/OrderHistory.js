@@ -2,13 +2,9 @@ const mongoose = require('mongoose');
 const { ObjectId } = mongoose.Schema.Types;
 
 const orderHistorySchema = new mongoose.Schema({
-    business: {
+    account: {
         type: ObjectId,
-        ref: 'Business',
-    },
-    personal: {
-        type: ObjectId,
-        ref: 'Personal',
+        ref: 'Account',
     },
     card: {
         type: ObjectId,
