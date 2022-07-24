@@ -15,12 +15,12 @@ const {
 
 cardRouter
     .route('/')
-    .get(protect, getAllCards)
-    .post(protect, restrictTo(['Personal', 'Business']), postCard);
+    .get(protect, restrictTo('Admin'), getAllCards)
+    .post(protect, restrictTo('Admin'), postCard);
 
 cardRouter
     .route('/:id')
-    .get(protect, getCard)
-    .put(protect, restrictTo(['Business, Personal']), updateCard);
+    .get(protect, restrictTo('Admin'), getCard)
+    .put(protect, restrictTo('Admin'), updateCard);
 
 module.exports = cardRouter;

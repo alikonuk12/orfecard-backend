@@ -15,12 +15,12 @@ const {
 
 orderHistoryRouter
     .route('/')
-    .get(protect, getAllOrderHistories)
-    .post(protect, restrictTo(['Personal', 'Business']), postOrderHistory);
+    .get(protect, restrictTo('Admin'), getAllOrderHistories)
+    .post(protect, restrictTo('Admin'), postOrderHistory);
 
 orderHistoryRouter
     .route('/:id')
-    .get(protect, getOrderHistory)
-    .put(protect, updateOrderHistory);
+    .get(protect, restrictTo('Admin'), getOrderHistory)
+    .put(protect, restrictTo('Admin'), updateOrderHistory);
 
 module.exports = orderHistoryRouter;

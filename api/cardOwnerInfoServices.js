@@ -15,12 +15,12 @@ const {
 
 cardOwnerInfoRouter
     .route('/')
-    .get(protect, restrictTo(['Business', 'Admin']), getAllCardOwnerInfos)
-    .post(protect, restrictTo(['Business', 'Personal']), postCardOwnerInfo);
+    .get(protect, restrictTo('Admin'), getAllCardOwnerInfos)
+    .post(protect, restrictTo('Admin'), postCardOwnerInfo);
 
 cardOwnerInfoRouter
     .route('/:id')
-    .get(protect, getCardOwnerInfo)
-    .put(protect, restrictTo(['Business', 'Personal']), updateCardOwnerInfo);
+    .get(protect, restrictTo('Admin'), getCardOwnerInfo)
+    .put(protect, restrictTo('Admin'), updateCardOwnerInfo);
 
 module.exports = cardOwnerInfoRouter;

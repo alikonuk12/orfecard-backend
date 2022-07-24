@@ -36,10 +36,6 @@ const getAllCardOwnerInfos = async (req, res) => {
 
 const postCardOwnerInfo = async (req, res) => {
     try {
-        if (req.body.personal) {
-            const personal = await CardOwnerInfo.find({ personal: req.body.personal });
-            if (personal.length > 0) return res.json({ status: 'failure' });
-        }
         const cardOwnerInfo = await CardOwnerInfo.create(req.body);
         if (!cardOwnerInfo) return res.json({ status: 'failure' });
         return res.json({ status: 'success' });
