@@ -9,7 +9,12 @@ const {
     updatePassword,
     deleteUser,
     logout,
-    protect
+    protect,
+    getCardOwnerInfo,
+    getCardOwnerInfoDetail,
+    createCardOwnerInfoDetail,
+    updateCardOwnerInfoDetail,
+    deleteCardOwnerInfoDetail
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -39,5 +44,25 @@ accountRouter
 accountRouter
     .route('/logout')
     .get(protect, logout);
+
+accountRouter
+    .route('/getcardownerinfo')
+    .get(protect, getCardOwnerInfo);
+
+accountRouter
+    .route('/getcardownerinfodetail')
+    .post(protect, getCardOwnerInfoDetail);
+
+accountRouter
+    .route('/createcardownerinfodetail')
+    .post(protect, createCardOwnerInfoDetail);
+
+accountRouter
+    .route('/updatecardownerinfodetail')
+    .put(protect, updateCardOwnerInfoDetail);
+
+accountRouter
+    .route('/deletecardownerinfodetail')
+    .delete(protect, deleteCardOwnerInfoDetail);
 
 module.exports = accountRouter;

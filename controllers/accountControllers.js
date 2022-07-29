@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { promisify } = require('util');
-const { Account } = require('../models');
+const { Account, CardOwnerInfo } = require('../models');
 const { SendEmail } = require('../utils');
 
 const signToken = (id) => {
@@ -15,18 +15,15 @@ const createSendToken = async (account, res) => {
 
     const cookieOptions = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
-        httpOnly: false
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production'
     };
-
-    if (process.env.NODE_ENV === 'production') cookieOptions.secure = true;
 
     res.cookie('jwt', token, cookieOptions);
 
-    account.password = undefined;
-
     return res.json({
         status: 'success',
-        data: account
+        data: { email: account.email, role: account.role }
     });
 };
 
@@ -36,6 +33,7 @@ const signUp = async (req, res) => {
         if (email) return res.json({ status: 'failure', data: 'Already Registed' });
 
         const account = await Account.create(req.body);
+
         createSendToken(account, res);
     } catch (error) {
         console.log(error);
@@ -173,6 +171,60 @@ const logout = (req, res) => {
     }
 };
 
+const getCardOwnerInfo = async (req, res) => {
+    try {
+        const cardOwnerInfos = await CardOwnerInfo.find({ account: req.user.id }, { _id: 0, name: 1, lastname: 1, email: 1, phoneNumber: 1, image: 1 });
+        if (!cardOwnerInfos) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: cardOwnerInfos });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const getCardOwnerInfoDetail = async (req, res) => {
+    try {
+        const cardOwnerInfoDetail = await CardOwnerInfo.findOne({ account: req.user.id, email: req.body.email }, { _id: 0, __v: 0, account: 0 });
+        if (!cardOwnerInfoDetail) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: cardOwnerInfoDetail });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const createCardOwnerInfoDetail = async (req, res) => {
+    try {
+        const newCardOwnerInfoDetail = await CardOwnerInfo.create({ ...req.body, account: req.user.id });
+        if (!newCardOwnerInfoDetail) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const updateCardOwnerInfoDetail = async (req, res) => {
+    try {
+        const cardOwnerInfos = await CardOwnerInfo.findOneAndUpdate({ account: req.user.id, email: req.body.email }, req.body);
+        if (!cardOwnerInfos) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const deleteCardOwnerInfoDetail = async (req, res) => {
+    try {
+        const cardOwnerInfos = await CardOwnerInfo.findOneAndUpdate({ account: req.user.id, email: req.body.email }, { activate: false });
+        if (!cardOwnerInfos) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
 
 module.exports = {
     signUp,
@@ -183,5 +235,10 @@ module.exports = {
     resetPassword,
     updatePassword,
     deleteUser,
-    logout
+    logout,
+    getCardOwnerInfo,
+    getCardOwnerInfoDetail,
+    createCardOwnerInfoDetail,
+    updateCardOwnerInfoDetail,
+    deleteCardOwnerInfoDetail
 };

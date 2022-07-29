@@ -53,7 +53,8 @@ const accountSchema = new mongoose.Schema({
         enum: {
             values: ['Admin', 'Client'],
             message: 'This type cannot be given'
-        }
+        },
+        default: 'Client'
     },
     createdAt: {
         type: Date,
