@@ -26,7 +26,8 @@ const updateCard = async (req, res) => {
 
 const getAllCards = async (req, res) => {
     try {
-        const cards = await Card.find(req.query);
+        const { page, limit } = req.query;
+        const cards = await Card.find(req.query).limit(limit).skip((page - 1) * limit);
         return res.json({ status: 'success', data: cards });
     } catch (error) {
         console.log(error);

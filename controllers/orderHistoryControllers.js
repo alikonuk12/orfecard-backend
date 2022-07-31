@@ -26,7 +26,8 @@ const updateOrderHistory = async (req, res) => {
 
 const getAllOrderHistories = async (req, res) => {
     try {
-        const orderHistories = await OrderHistory.find(req.query);
+        const { page, limit } = req.query;
+        const orderHistories = await OrderHistory.find(req.query).limit(limit).skip((page - 1) * limit);;
         return res.json({ status: 'success', data: orderHistories });
     } catch (error) {
         console.log(error);
