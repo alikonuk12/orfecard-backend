@@ -14,7 +14,8 @@ const {
     getCardDetail,
     createCardDetail,
     updateCardDetail,
-    deleteCardDetail
+    deleteCardDetail,
+    isUserLoggedIn
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -44,6 +45,10 @@ accountRouter
 accountRouter
     .route('/logout')
     .get(protect, logout);
+
+accountRouter
+    .route('/isuserloggedin')
+    .get(isUserLoggedIn);
 
 accountRouter
     .route('/getcard')

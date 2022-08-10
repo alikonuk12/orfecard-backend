@@ -171,6 +171,28 @@ const logout = (req, res) => {
     }
 };
 
+const isUserLoggedIn = async (req, res) => {
+    try {
+        let token;
+        if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+            token = req.headers.authorization.split(' ')[1];
+        } else if (req.cookies?.jwt) {
+            token = req.cookies.jwt;
+        }
+
+        if (!token) return res.json({ status: 'success', data: false });
+
+        const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+        const currentAccount = await Account.findById(decoded.id);
+        if (!currentAccount) return res.json({ status: 'success', data: false });
+
+        if (token && currentAccount._id) return res.json({ status: 'success', data: true });
+        return res.json({ status: 'success', data: false });
+    } catch (error) {
+        res.json({ status: 'error', data: false });
+    }
+}
+
 const getCard = async (req, res) => {
     try {
         const cards = await Card.find({ account: req.user.id }, { _id: 0, name: 1, lastname: 1, email: 1, phoneNumber: 1, image: 1, serialNumber: 1 });
@@ -236,6 +258,7 @@ module.exports = {
     updatePassword,
     deleteUser,
     logout,
+    isUserLoggedIn,
     getCard,
     getCardDetail,
     createCardDetail,
