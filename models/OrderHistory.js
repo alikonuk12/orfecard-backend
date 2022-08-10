@@ -6,11 +6,11 @@ const orderHistorySchema = new mongoose.Schema({
         type: ObjectId,
         ref: 'Account',
     },
-    card: {
+    product: {
         type: ObjectId,
-        ref: 'Card',
-        required: [true, 'Card field is required'],
-        unique: [true, 'Card field must be unique']
+        ref: 'Product',
+        required: [true, 'Product field is required'],
+        unique: [true, 'Product field must be unique']
     },
     status: {
         type: String,
