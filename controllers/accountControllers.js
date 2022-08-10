@@ -1,7 +1,7 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const { promisify } = require('util');
-const { Account, CardOwnerInfo } = require('../models');
+const { Account, Card } = require('../models');
 const { SendEmail } = require('../utils');
 
 const signToken = (id) => {
@@ -97,7 +97,7 @@ const forgotPassword = async (req, res) => {
     const resetToken = account.createPasswordResetToken();
     await account.save({ validateBeforeSave: false });
 
-    const resetURL = `${req.protocol}://${req.get('host')}/api/account/resetpassword/${resetToken}`;
+    const resetURL = `${req.protocol}://localhost:3000/resetpassword/${resetToken}`;
     const message = `<html><body><a href=${resetURL}>Click For Change Password</a></body></html>`;
 
     try {
@@ -171,32 +171,32 @@ const logout = (req, res) => {
     }
 };
 
-const getCardOwnerInfo = async (req, res) => {
+const getCard = async (req, res) => {
     try {
-        const cardOwnerInfos = await CardOwnerInfo.find({ account: req.user.id }, { _id: 0, name: 1, lastname: 1, email: 1, phoneNumber: 1, image: 1 });
-        if (!cardOwnerInfos) return res.json({ status: 'failure' });
-        return res.json({ status: 'success', data: cardOwnerInfos });
+        const cards = await Card.find({ account: req.user.id }, { _id: 0, name: 1, lastname: 1, email: 1, phoneNumber: 1, image: 1, serialNumber: 1 });
+        if (!cards) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: cards });
     } catch (error) {
         console.log(error);
         return res.json({ status: 'error' });
     }
 }
 
-const getCardOwnerInfoDetail = async (req, res) => {
+const getCardDetail = async (req, res) => {
     try {
-        const cardOwnerInfoDetail = await CardOwnerInfo.findOne({ account: req.user.id, email: req.body.email }, { _id: 0, __v: 0, account: 0 });
-        if (!cardOwnerInfoDetail) return res.json({ status: 'failure' });
-        return res.json({ status: 'success', data: cardOwnerInfoDetail });
+        const cardDetail = await Card.findOne({ account: req.user.id, serialNumber: req.body.serialNumber }, { _id: 0, __v: 0, account: 0 });
+        if (!cardDetail) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: cardDetail });
     } catch (error) {
         console.log(error);
         return res.json({ status: 'error' });
     }
 }
 
-const createCardOwnerInfoDetail = async (req, res) => {
+const createCardDetail = async (req, res) => {
     try {
-        const newCardOwnerInfoDetail = await CardOwnerInfo.create({ ...req.body, account: req.user.id });
-        if (!newCardOwnerInfoDetail) return res.json({ status: 'failure' });
+        const newCardDetail = await Card.create({ ...req.body, account: req.user.id });
+        if (!newCardDetail) return res.json({ status: 'failure' });
         return res.json({ status: 'success' });
     } catch (error) {
         console.log(error);
@@ -204,10 +204,10 @@ const createCardOwnerInfoDetail = async (req, res) => {
     }
 }
 
-const updateCardOwnerInfoDetail = async (req, res) => {
+const updateCardDetail = async (req, res) => {
     try {
-        const cardOwnerInfos = await CardOwnerInfo.findOneAndUpdate({ account: req.user.id, email: req.body.email }, req.body);
-        if (!cardOwnerInfos) return res.json({ status: 'failure' });
+        const cards = await Card.findOneAndUpdate({ account: req.user.id, serialNumber: req.body.serialNumber }, { ...req.body, updatedAt: Date.now() });
+        if (!cards) return res.json({ status: 'failure' });
         return res.json({ status: 'success' });
     } catch (error) {
         console.log(error);
@@ -215,10 +215,10 @@ const updateCardOwnerInfoDetail = async (req, res) => {
     }
 }
 
-const deleteCardOwnerInfoDetail = async (req, res) => {
+const deleteCardDetail = async (req, res) => {
     try {
-        const cardOwnerInfos = await CardOwnerInfo.findOneAndUpdate({ account: req.user.id, email: req.body.email }, { activate: false });
-        if (!cardOwnerInfos) return res.json({ status: 'failure' });
+        const cards = await Card.findOneAndUpdate({ account: req.user.id, serialNumber: req.body.serialNumber }, { activate: false });
+        if (!cards) return res.json({ status: 'failure' });
         return res.json({ status: 'success' });
     } catch (error) {
         console.log(error);
@@ -236,9 +236,9 @@ module.exports = {
     updatePassword,
     deleteUser,
     logout,
-    getCardOwnerInfo,
-    getCardOwnerInfoDetail,
-    createCardOwnerInfoDetail,
-    updateCardOwnerInfoDetail,
-    deleteCardOwnerInfoDetail
+    getCard,
+    getCardDetail,
+    createCardDetail,
+    updateCardDetail,
+    deleteCardDetail
 };

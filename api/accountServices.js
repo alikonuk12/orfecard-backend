@@ -10,11 +10,11 @@ const {
     deleteUser,
     logout,
     protect,
-    getCardOwnerInfo,
-    getCardOwnerInfoDetail,
-    createCardOwnerInfoDetail,
-    updateCardOwnerInfoDetail,
-    deleteCardOwnerInfoDetail
+    getCard,
+    getCardDetail,
+    createCardDetail,
+    updateCardDetail,
+    deleteCardDetail
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -46,23 +46,23 @@ accountRouter
     .get(protect, logout);
 
 accountRouter
-    .route('/getcardownerinfo')
-    .get(protect, getCardOwnerInfo);
+    .route('/getcard')
+    .get(protect, getCard);
 
 accountRouter
-    .route('/getcardownerinfodetail')
-    .post(protect, getCardOwnerInfoDetail);
+    .route('/getcarddetail')
+    .post(protect, getCardDetail);
 
 accountRouter
-    .route('/createcardownerinfodetail')
-    .post(protect, createCardOwnerInfoDetail);
+    .route('/createcarddetail')
+    .post(protect, createCardDetail);
 
 accountRouter
-    .route('/updatecardownerinfodetail')
-    .put(protect, updateCardOwnerInfoDetail);
+    .route('/updatecarddetail')
+    .put(protect, updateCardDetail);
 
 accountRouter
-    .route('/deletecardownerinfodetail')
-    .delete(protect, deleteCardOwnerInfoDetail);
+    .route('/deletecarddetail')
+    .delete(protect, deleteCardDetail);
 
 module.exports = accountRouter;
