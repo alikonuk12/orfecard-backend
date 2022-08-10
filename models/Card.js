@@ -53,11 +53,22 @@ const cardSchema = new mongoose.Schema({
         type: String,
         required: [true, 'Type field is required'],
         enum: {
-            values: ['Black', 'Gray', 'White', 'Pink', 'Green', 'Special Design'],
+            values: ['Vertical', 'Horizontal'],
+            message: 'This type cannot be given'
+        }
+    },
+    cardColor: {
+        type: String,
+        required: [true, 'Type field is required'],
+        enum: {
+            values: ['Black', 'White', 'Pink', 'Green', 'Blue', 'Red', 'Special Design'],
             message: 'This type cannot be given'
         }
     },
     cardImage: {
+        type: String
+    },
+    specialDesign: {
         type: String
     },
     facebook: {
@@ -137,6 +148,11 @@ const cardSchema = new mongoose.Schema({
         lowercase: [true, 'Grupanya field must be lowercase']
     },
     createdAt: {
+        type: Date,
+        required: [true, 'Created At field is required'],
+        default: Date.now()
+    },
+    updatedAt: {
         type: Date,
         required: [true, 'Created At field is required'],
         default: Date.now()

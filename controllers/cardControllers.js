@@ -15,7 +15,7 @@ const getCard = async (req, res) => {
 const updateCard = async (req, res) => {
     try {
         const { id } = req.params;
-        const card = await Card.findByIdAndUpdate(id, req.body, { new: true });
+        const card = await Card.findByIdAndUpdate(id, { ...req.body, updatedAt: Date.now() }, { new: true });
         if (!card) return res.json({ status: 'failure' });
         return res.json({ status: 'success' });
     } catch (error) {
