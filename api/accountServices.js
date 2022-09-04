@@ -15,7 +15,9 @@ const {
     createCardDetail,
     updateCardDetail,
     deleteCardDetail,
-    isUserLoggedIn
+    isUserLoggedIn,
+    getProfile,
+    addToContact
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -69,5 +71,13 @@ accountRouter
 accountRouter
     .route('/deletecarddetail')
     .delete(protect, deleteCardDetail);
+
+accountRouter
+    .route('/:profileId')
+    .get(getProfile);
+
+accountRouter
+    .route('/addtocontact/:profileId')
+    .get(addToContact);
 
 module.exports = accountRouter;

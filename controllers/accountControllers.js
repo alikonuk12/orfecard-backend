@@ -1,5 +1,6 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
+const VCard = require('vcard-creator').default
 const { promisify } = require('util');
 const { Account, Card } = require('../models');
 const { SendEmail } = require('../utils');
@@ -248,6 +249,35 @@ const deleteCardDetail = async (req, res) => {
     }
 }
 
+const getProfile = async (req, res) => {
+    try {
+        const profile = await Card.findOne({ serialNumber: req.params.profileId }, { _id: 0, __v: 0, account: 0, cardColor: 0, cardImage: 0, cardType: 0, createdAt: 0, serialNumber: 0, e_catalog: 0, updatedAt: 0 });
+        if (!profile) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: profile });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const addToContact = async (req, res) => {
+    try {
+        const myVCard = new VCard();
+        const profile = await Card.findOne({ serialNumber: req.params.profileId }, { _id: 0, __v: 0, account: 0, cardColor: 0, cardImage: 0, cardType: 0, createdAt: 0, serialNumber: 0, updatedAt: 0 });
+        if (!profile) return res.json({ status: 'failure' });
+        const result = myVCard
+            .addName(profile.lastname, profile.name)
+            .addCompany(profile.companyName)
+            .addPhoneNumber(profile.phoneNumber)
+            .buildVCard();
+
+        return res.json({ status: 'success', data: result });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
 module.exports = {
     signUp,
     login,
@@ -263,5 +293,7 @@ module.exports = {
     getCardDetail,
     createCardDetail,
     updateCardDetail,
-    deleteCardDetail
+    deleteCardDetail,
+    getProfile,
+    addToContact
 };

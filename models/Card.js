@@ -38,6 +38,15 @@ const cardSchema = new mongoose.Schema({
     location: {
         type: String
     },
+    tax_information: {
+        type: String
+    },
+    bank_information: {
+        type: String
+    },
+    e_catalog: {
+        type: String
+    },
     companyName: {
         type: String
     },
