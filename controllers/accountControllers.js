@@ -268,6 +268,7 @@ const addToContact = async (req, res) => {
         const result = myVCard
             .addName(profile.lastname, profile.name)
             .addCompany(profile.companyName)
+            .addEmail(profile.email)
             .addPhoneNumber(profile.phoneNumber)
             .buildVCard();
 
