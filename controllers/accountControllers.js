@@ -30,6 +30,9 @@ const createSendToken = async (account, res) => {
 
 const signUp = async (req, res) => {
     try {
+        if (!req.body.extNumber && !req.body.TCKN) {
+            return res.json({ status: 'failure', data: 'TCKN ya da Vergi Numarası zorunludur' });
+        }
         const email = await Account.findOne({ email: req.body.email });
         if (email) return res.json({ status: 'failure', data: 'Already Registed' });
 
@@ -165,6 +168,9 @@ const getUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
     try {
+        if (!req.body.extNumber && !req.body.TCKN) {
+            return res.json({ status: 'failure', data: 'TCKN ya da Vergi Numarası zorunludur' });
+        }
         await Account.findByIdAndUpdate(req.user.id, req.body);
         return res.json({ status: 'success' });
     } catch (error) {
