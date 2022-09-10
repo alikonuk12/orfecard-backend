@@ -74,7 +74,7 @@ const accountSchema = new mongoose.Schema({
     },
     passwordResetExpires: {
         type: Date
-    },
+    }
 });
 
 accountSchema.pre('save', async function (next) {

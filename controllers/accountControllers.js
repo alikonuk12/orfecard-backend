@@ -152,6 +152,27 @@ const updatePassword = async (req, res) => {
     }
 };
 
+const getUser = async (req, res) => {
+    try {
+        const user = await Account.findById(req.user.id, { _id: 0, __v: 0, password: 0, role: 0, createdAt: 0, activate: 0, passwordChangedAt: 0 });
+        if (!user) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: user });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
+const updateUser = async (req, res) => {
+    try {
+        await Account.findByIdAndUpdate(req.user.id, req.body);
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+}
+
 const deleteUser = async (req, res) => {
     try {
         await Account.findByIdAndUpdate(req.user.id, { activate: false });
@@ -287,6 +308,8 @@ module.exports = {
     forgotPassword,
     resetPassword,
     updatePassword,
+    getUser,
+    updateUser,
     deleteUser,
     logout,
     isUserLoggedIn,

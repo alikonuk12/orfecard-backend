@@ -7,6 +7,8 @@ const {
     forgotPassword,
     resetPassword,
     updatePassword,
+    getUser,
+    updateUser,
     deleteUser,
     logout,
     protect,
@@ -39,6 +41,14 @@ accountRouter
 accountRouter
     .route('/updatepassword')
     .put(protect, updatePassword);
+
+accountRouter
+    .route('/getuser')
+    .get(protect, getUser);
+
+accountRouter
+    .route('/updateuser')
+    .put(protect, updateUser);
 
 accountRouter
     .route('/deleteuser')
