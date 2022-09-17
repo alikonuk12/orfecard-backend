@@ -30,12 +30,16 @@ const createSendToken = async (account, res) => {
 
 const signUp = async (req, res) => {
     try {
+        if (!req.body.agreement) {
+            return res.json({ status: 'failure', data: 'Metinlerin onaylanması zorunludur' });
+        }
         if (!req.body.extNumber && !req.body.TCKN) {
             return res.json({ status: 'failure', data: 'TCKN ya da Vergi Numarası zorunludur' });
         }
         const email = await Account.findOne({ email: req.body.email });
         if (email) return res.json({ status: 'failure', data: 'Already Registed' });
 
+        delete req.body.agreement;
         const account = await Account.create(req.body);
 
         createSendToken(account, res);
@@ -306,6 +310,23 @@ const addToContact = async (req, res) => {
     }
 }
 
+const sendContactMail = async (req, res) => {
+    const { name, email, message } = req.body;
+
+    try {
+        await SendEmail({
+            email: 'support@orfecard.com',
+            subject: name + ' - ' + email,
+            message
+        });
+
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
 module.exports = {
     signUp,
     login,
@@ -325,5 +346,6 @@ module.exports = {
     updateCardDetail,
     deleteCardDetail,
     getProfile,
-    addToContact
+    addToContact,
+    sendContactMail
 };

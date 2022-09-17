@@ -19,7 +19,8 @@ const {
     deleteCardDetail,
     isUserLoggedIn,
     getProfile,
-    addToContact
+    addToContact,
+    sendContactMail
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -89,5 +90,9 @@ accountRouter
 accountRouter
     .route('/addtocontact/:profileId')
     .get(addToContact);
+
+accountRouter
+    .route('/sendcontactmail')
+    .post(sendContactMail);
 
 module.exports = accountRouter;
