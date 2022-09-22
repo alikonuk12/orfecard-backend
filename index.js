@@ -9,7 +9,7 @@ const hostname = process.env.YOUR_HOST;
 const database = process.env.DATABASE;
 const API = require('./api');
 
-const whitelist = ['http://localhost:3000'];
+const whitelist = ['http://localhost:3000', 'https://orfecard.com', 'https://www.orfecard.com'];
 const corsOptions = {
     origin: function (origin, callback) {
         if (whitelist.indexOf(origin) !== -1) {
