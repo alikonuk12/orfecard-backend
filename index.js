@@ -7,12 +7,14 @@ const dotenv = require('dotenv').config();
 const port = process.env.PORT;
 const hostname = process.env.YOUR_HOST;
 const database = process.env.DATABASE;
+const authMechanism = process.env.AUTH_MECHANISM;
+const dbName = process.env.DB_NAME;
 const API = require('./api');
 
 const whitelist = [
-    'http://localhost:3000', 
-    'https://orfecard.com', 
-    'https://www.orfecard.com', 
+    'http://localhost:3000',
+    'https://orfecard.com',
+    'https://www.orfecard.com',
     'http://78.135.105.164:3000'
 ];
 
@@ -30,7 +32,7 @@ const corsOptions = {
     allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'device-remember-token', 'Access-Control-Allow-Origin', 'Origin', 'Accept']
 };
 
-mongoose.connect(database);
+mongoose.connect(database, { authMechanism, dbName });
 
 app.use(cookieParser());
 app.use(express.urlencoded({ extended: true }));
