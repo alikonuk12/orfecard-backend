@@ -302,7 +302,8 @@ const addToContact = async (req, res) => {
             .addCompany(profile.companyName || '')
             .addEmail(profile.email || '')
             .addURL(req.body.link || '')
-            .addPhoneNumber(profile.phoneNumber || '')
+            .addPhoneNumber(profile.phoneNumber || '', 'CELL')
+            .addPhoneNumber(profile.landlineNumber || '', 'WORK')
             .buildVCard();
 
         return res.json({ status: 'success', data: result });
