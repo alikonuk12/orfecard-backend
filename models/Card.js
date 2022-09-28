@@ -3,16 +3,13 @@ const { ObjectId } = mongoose.Schema.Types;
 
 const cardSchema = new mongoose.Schema({
     name: {
-        type: String,
-        required: [true, 'Name field is required']
+        type: String
     },
     lastname: {
-        type: String,
-        required: [true, 'Lastname field is required']
+        type: String
     },
     phoneNumber: {
-        type: String,
-        required: [true, 'Phone Number field is required']
+        type: String
     },
     landlineNumber: {
         type: String
@@ -22,11 +19,11 @@ const cardSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: [true, 'Email field is required'],
         lowercase: [true, 'Email field must be lowercase']
     },
     account: {
         type: ObjectId,
+        required: [true, 'Account field is required'],
         ref: 'Account',
     },
     website: {
@@ -60,7 +57,6 @@ const cardSchema = new mongoose.Schema({
     },
     cardType: {
         type: String,
-        required: [true, 'Type field is required'],
         enum: {
             values: ['Vertical', 'Horizontal'],
             message: 'This type cannot be given'
