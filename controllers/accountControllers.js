@@ -298,10 +298,11 @@ const addToContact = async (req, res) => {
         const profile = await Card.findOne({ serialNumber: req.params.profileId }, { _id: 0, __v: 0, account: 0, cardColor: 0, cardImage: 0, cardType: 0, createdAt: 0, serialNumber: 0, updatedAt: 0 });
         if (!profile) return res.json({ status: 'failure' });
         const result = myVCard
-            .addName(profile.lastname, profile.name)
-            .addCompany(profile.companyName)
-            .addEmail(profile.email)
-            .addPhoneNumber(profile.phoneNumber)
+            .addName(profile.lastname || '', profile.name || '')
+            .addCompany(profile.companyName || '')
+            .addEmail(profile.email || '')
+            .addURL(req.body.link || '')
+            .addPhoneNumber(profile.phoneNumber || '')
             .buildVCard();
 
         return res.json({ status: 'success', data: result });

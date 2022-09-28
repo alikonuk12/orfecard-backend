@@ -41,7 +41,19 @@ const cardSchema = new mongoose.Schema({
     bank_information: {
         type: String
     },
-    e_catalog: {
+    e_catalog_1: {
+        type: String
+    },
+    e_catalog_2: {
+        type: String
+    },
+    e_catalog_3: {
+        type: String
+    },
+    e_catalog_4: {
+        type: String
+    },
+    e_catalog_5: {
         type: String
     },
     companyName: {

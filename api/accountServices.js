@@ -89,7 +89,7 @@ accountRouter
 
 accountRouter
     .route('/addtocontact/:profileId')
-    .get(addToContact);
+    .post(addToContact);
 
 accountRouter
     .route('/sendcontactmail')
