@@ -5,21 +5,21 @@ const orderHistorySchema = new mongoose.Schema({
     account: {
         type: ObjectId,
         ref: 'Account',
+        required: [true, 'Account field is required']
     },
-    product: {
+    orderDetail: {
         type: ObjectId,
-        ref: 'Product',
-        required: [true, 'Product field is required'],
-        unique: [true, 'Product field must be unique']
+        ref: 'OrderDetail',
+        required: [true, 'Order Detail field is required']
     },
     status: {
         type: String,
         required: [true, 'Status field is required'],
         enum: {
-            values: ['Alındı', 'Baskıda', 'Yolda', 'Teslim Edildi'],
+            values: ['İşleme alındı', 'Kargoya verildi'],
             message: 'This type cannot be given'
         },
-        default: 'Alındı'
+        default: 'İşleme alındı'
     },
     createdAt: {
         type: Date,
