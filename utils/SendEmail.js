@@ -9,7 +9,7 @@ const sendEmail = async options => {
         secure: false,
         auth: {
             user: "orfecard@gmail.com",
-            pass: "pygatfkymboljipu"
+            pass: "dmwfpgdjozulqzrg"
         }
     });
 

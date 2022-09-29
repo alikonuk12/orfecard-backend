@@ -20,7 +20,8 @@ const {
     isUserLoggedIn,
     getProfile,
     addToContact,
-    sendContactMail
+    sendContactMail,
+    giveOrder
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -94,5 +95,9 @@ accountRouter
 accountRouter
     .route('/sendcontactmail')
     .post(sendContactMail);
+
+accountRouter
+    .route('/giveorder')
+    .post(protect, giveOrder);
 
 module.exports = accountRouter;

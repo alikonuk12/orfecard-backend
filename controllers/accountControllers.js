@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const VCard = require('vcard-creator').default
 const { promisify } = require('util');
-const { Account, Card } = require('../models');
+const { Account, Card, OrderDetail, OrderHistory } = require('../models');
 const { SendEmail } = require('../utils');
 
 const signToken = (id) => {
@@ -17,7 +17,7 @@ const createSendToken = async (account, res) => {
     const cookieOptions = {
         expires: new Date(Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24 * 60 * 60 * 1000),
         httpOnly: true,
-		secure: true,
+        secure: true,
         sameSite: 'none'
     };
 
@@ -330,6 +330,68 @@ const sendContactMail = async (req, res) => {
     }
 };
 
+const giveOrder = async (req, res) => {
+    try {
+        const { product, fullname, logo, specialDesign, color, direction } = req.body;
+        const cardLength = (await Card.find()).length;
+        const serialNumber = 1000000000 + cardLength;
+
+        const card = await Card.create({
+            account: req.user.id,
+            cardColor: color,
+            serialNumber
+        });
+
+        const orderDetail = await OrderDetail.create({
+            card: card.id,
+            product,
+            fullname,
+            logo,
+            specialDesign,
+            color,
+            direction
+        });
+
+        const orderHistory = await OrderHistory.create({
+            account: req.user.id,
+            orderDetail: orderDetail.id
+        });
+
+        await SendEmail({
+            email: 'orfecard@gmail.com',
+            subject: 'Yeni Kart Siparişi Hk.',
+            message: `
+            <!DOCTYPE html>
+            <html>
+            <body>
+            <h1>Yeni Sipariş</h1>
+            <p>Kart özellikleri aşağıdaki şekildedir.</p>
+            <table style="width:100%">
+            <tr>
+            <th>Ad Soyad:</th>
+            <td>${fullname}</td>
+            </tr>
+            <tr>
+            <th>Kart Yönü:</th>
+            <td>${direction}</td>
+            </tr>
+            <tr>
+            <th>Kart Rengi:</th>
+            <td>${color}</td>
+            </tr>
+            </table>
+            </body>
+            </html>
+            `
+        });
+
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
 module.exports = {
     signUp,
     login,
@@ -350,5 +412,6 @@ module.exports = {
     deleteCardDetail,
     getProfile,
     addToContact,
-    sendContactMail
+    sendContactMail,
+    giveOrder
 };
