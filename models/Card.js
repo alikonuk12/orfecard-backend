@@ -76,11 +76,7 @@ const cardSchema = new mongoose.Schema({
     },
     cardColor: {
         type: String,
-        required: [true, 'Type field is required'],
-        enum: {
-            values: ['Black', 'White', 'Pink', 'Green', 'Blue', 'Red', 'Special Design'],
-            message: 'This type cannot be given'
-        }
+        required: [true, 'Type field is required']
     },
     cardImage: {
         type: String

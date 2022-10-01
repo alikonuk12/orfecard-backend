@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const VCard = require('vcard-creator').default
+const Iyzipay = require('iyzipay');
 const { promisify } = require('util');
 const { Account, Card, OrderDetail, OrderHistory } = require('../models');
 const { SendEmail } = require('../utils');
@@ -332,57 +333,151 @@ const sendContactMail = async (req, res) => {
 
 const giveOrder = async (req, res) => {
     try {
-        const { product, fullname, logo, specialDesign, color, direction } = req.body;
-        const cardLength = (await Card.find()).length;
-        const serialNumber = 1000000000 + cardLength;
+        const orderDetailIDs = [];
+        const basket = [];
 
-        const card = await Card.create({
-            account: req.user.id,
-            cardColor: color,
-            serialNumber
+        const iyzipay = new Iyzipay({
+            apiKey: 'NHuBJ5xCZP5c9LotBywHstu3aLUL1PXe',
+            secretKey: 'S1p0dQcvlyo5USBKOVZuZszFMfZglgbL',
+            uri: 'https://api.iyzipay.com'
         });
 
-        const orderDetail = await OrderDetail.create({
-            card: card.id,
-            product,
-            fullname,
-            logo,
-            specialDesign,
-            color,
-            direction
-        });
 
-        const orderHistory = await OrderHistory.create({
-            account: req.user.id,
-            orderDetail: orderDetail.id
-        });
+        req.body.cart.map(async (order, index) => {
+            const { product, fullname, logo, specialDesign, color, direction } = order;
+            const cardLength = (await Card.find()).length;
+            const serialNumber = 1000000000 + cardLength + index + 1;
 
-        await SendEmail({
-            email: 'orfecard@gmail.com',
-            subject: 'Yeni Kart Siparişi Hk.',
-            message: `
-            <!DOCTYPE html>
-            <html>
-            <body>
-            <h1>Yeni Sipariş</h1>
-            <p>Kart özellikleri aşağıdaki şekildedir.</p>
-            <table style="width:100%">
-            <tr>
-            <th>Ad Soyad:</th>
-            <td>${fullname}</td>
-            </tr>
-            <tr>
-            <th>Kart Yönü:</th>
-            <td>${direction}</td>
-            </tr>
-            <tr>
-            <th>Kart Rengi:</th>
-            <td>${color}</td>
-            </tr>
-            </table>
-            </body>
-            </html>
-            `
+            const card = await Card.create({
+                account: req.user.id,
+                cardColor: color,
+                serialNumber
+            });
+
+            const orderDetail = await OrderDetail.create({
+                card: card.id,
+                product: '63337850faad3bc9237376b6',
+                fullname,
+                logo,
+                specialDesign,
+                color,
+                direction
+            });
+
+            orderDetailIDs.push(orderDetail.id);
+            basket.push({ id: orderDetail.id, name: product.productName, price: product.price });
+
+            await SendEmail({
+                email: 'orfecard@gmail.com',
+                subject: 'Yeni Kart Siparişi Hk.',
+                message: `
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <h1>Yeni Sipariş</h1>
+                <p>Kart özellikleri aşağıdaki şekildedir.</p>
+                <table style="width:100%">
+                <tr>
+                <th>Ad Soyad:</th>
+                <td>${fullname}</td>
+                </tr>
+                <tr>
+                <th>Kart Yönü:</th>
+                <td>${direction}</td>
+                </tr>
+                <tr>
+                <th>Kart Rengi:</th>
+                <td>${color}</td>
+                </tr>
+                </table>
+                </body>
+                </html>
+                `
+            });
+
+            if (index === req.body.cart.length - 1) {
+                const orderHistory = await OrderHistory.create({
+                    account: req.user.id,
+                    orderDetail: orderDetailIDs,
+                    price: String(req.body.total)
+                });
+
+                const {
+                    name,
+                    surname,
+                    ip,
+                    city,
+                    country,
+                    billingAddress,
+                    taxAdministration,
+                    taxNumber,
+                    zipCode,
+                    address,
+                    shippingZipCode,
+                    cardHolderName,
+                    cardNumber,
+                    expireMonth,
+                    expireYear,
+                    cvc
+                } = req.body.infos;
+
+                const request = {
+                    locale: Iyzipay.LOCALE.TR,
+                    price: String(Number(req.body.total) * 1.18),
+                    paidPrice: String(Number(req.body.total) * 1.18),
+                    currency: Iyzipay.CURRENCY.TRY,
+                    installment: '1',
+                    paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
+                    paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
+                    callbackUrl: 'https://www.merchant.com/callback',
+                    paymentCard: {
+                        cardHolderName,
+                        cardNumber,
+                        expireMonth,
+                        expireYear,
+                        cvc,
+                        registerCard: '0'
+                    },
+                    buyer: {
+                        id: req.user.id,
+                        name,
+                        surname,
+                        gsmNumber: req.user.phoneNumber,
+                        email: req.user.email,
+                        identityNumber: req.user.TCKN || req.user.taxNumber,
+                        registrationAddress: req.user.address,
+                        ip,
+                        city,
+                        country,
+                        zipCode
+                    },
+                    shippingAddress: {
+                        contactName: name + ' ' + surname,
+                        city,
+                        country,
+                        address,
+                        zipCode: shippingZipCode
+                    },
+                    billingAddress: {
+                        contactName: name + ' ' + surname,
+                        city,
+                        country,
+                        address: billingAddress,
+                        zipCode
+                    },
+                    basketItems: basket.map(({ id, name, price }) => ({
+                        id,
+                        name,
+                        category1: 'Card',
+                        itemType: Iyzipay.BASKET_ITEM_TYPE.PHYSICAL,
+                        price: String(Number(price) * 1.18)
+                    }))
+                };
+
+                iyzipay.threedsInitialize.create(request, result => {
+                    console.log(result);
+                });
+            }
         });
 
         return res.json({ status: 'success' });

@@ -8,9 +8,12 @@ const orderHistorySchema = new mongoose.Schema({
         required: [true, 'Account field is required']
     },
     orderDetail: {
-        type: ObjectId,
-        ref: 'OrderDetail',
-        required: [true, 'Order Detail field is required']
+        type: [ObjectId],
+        ref: 'OrderDetail'
+    },
+    price: {
+        type: String,
+        required: [true, 'Price field is required']
     },
     status: {
         type: String,

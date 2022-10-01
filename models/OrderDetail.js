@@ -4,13 +4,11 @@ const { ObjectId } = mongoose.Schema.Types;
 const orderDetailSchema = new mongoose.Schema({
     card: {
         type: ObjectId,
-        ref: 'Card',
-        required: [true, 'Card field is required']
+        ref: 'Card'
     },
     product: {
         type: ObjectId,
-        ref: 'Product',
-        required: [true, 'Product field is required']
+        ref: 'Product'
     },
     fullname: {
         type: String
