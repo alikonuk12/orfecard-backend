@@ -480,8 +480,6 @@ const giveOrder = async (req, res) => {
                 });
             }
         });
-
-        return res.json({ status: 'success' });
     } catch (error) {
         console.log(error);
         return res.json({ status: 'error' });
