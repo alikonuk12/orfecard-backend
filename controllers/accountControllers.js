@@ -474,8 +474,9 @@ const giveOrder = async (req, res) => {
                     }))
                 };
 
-                iyzipay.threedsInitialize.create(request, result => {
-                    console.log(result);
+                iyzipay.threedsInitialize.create(request, (err, result) => {
+                    console.log(err, result);
+                    return res.send(result.threeDSHtmlContent);
                 });
             }
         });
