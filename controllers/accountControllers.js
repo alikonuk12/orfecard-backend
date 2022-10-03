@@ -337,11 +337,10 @@ const giveOrder = async (req, res) => {
         const basket = [];
 
         const iyzipay = new Iyzipay({
-            apiKey: 'NHuBJ5xCZP5c9LotBywHstu3aLUL1PXe',
-            secretKey: 'S1p0dQcvlyo5USBKOVZuZszFMfZglgbL',
-            uri: 'https://api.iyzipay.com'
+            apiKey: process.env.IYZICO_APIKEY,
+            secretKey: process.env.IYZICO_SECRETKEY,
+            uri: process.env.IYZICO_URI
         });
-
 
         req.body.cart.map(async (order, index) => {
             const { product, fullname, logo, specialDesign, color, direction } = order;
@@ -366,34 +365,6 @@ const giveOrder = async (req, res) => {
 
             orderDetailIDs.push(orderDetail.id);
             basket.push({ id: orderDetail.id, name: product.productName, price: product.price });
-
-            await SendEmail({
-                email: 'orfecard@gmail.com',
-                subject: 'Yeni Kart Siparişi Hk.',
-                message: `
-                <!DOCTYPE html>
-                <html>
-                <body>
-                <h1>Yeni Sipariş</h1>
-                <p>Kart özellikleri aşağıdaki şekildedir.</p>
-                <table style="width:100%">
-                <tr>
-                <th>Ad Soyad:</th>
-                <td>${fullname}</td>
-                </tr>
-                <tr>
-                <th>Kart Yönü:</th>
-                <td>${direction}</td>
-                </tr>
-                <tr>
-                <th>Kart Rengi:</th>
-                <td>${color}</td>
-                </tr>
-                </table>
-                </body>
-                </html>
-                `
-            });
 
             if (index === req.body.cart.length - 1) {
                 const orderHistory = await OrderHistory.create({
@@ -429,7 +400,7 @@ const giveOrder = async (req, res) => {
                     installment: '1',
                     paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
                     paymentGroup: Iyzipay.PAYMENT_GROUP.PRODUCT,
-                    callbackUrl: 'https://www.merchant.com/callback',
+                    callbackUrl: 'https://orfecard.online/api/account/orderpayment',
                     paymentCard: {
                         cardHolderName,
                         cardNumber,
@@ -474,11 +445,147 @@ const giveOrder = async (req, res) => {
                     }))
                 };
 
-                iyzipay.threedsInitialize.create(request, (err, result) => {
-                    console.log(err, result);
-                    return res.send(result.threeDSHtmlContent);
+                iyzipay.threedsInitialize.create(request, async (err, result) => {
+                    if (err || !result.threeDSHtmlContent) {
+                        await SendEmail({
+                            email: 'orfecard@gmail.com',
+                            subject: 'Sipariş Tamamlanmadı',
+                            message: `
+                            <!DOCTYPE html>
+                            <html>
+                            <body>
+                            <h1>İptal</h1>
+                            <p>Sipariş tamamlanmadı.</p>
+                            </body>
+                            </html>
+                            `
+                        });
+                        return res.json({ status: 'failure' });
+                    }
+                    await SendEmail({
+                        email: 'orfecard@gmail.com',
+                        subject: 'Yeni Kart Siparişi Hk.',
+                        message: `
+                        <!DOCTYPE html>
+                        <html>
+                        <body>
+                        <h1>Yeni Sipariş</h1>
+                        <p>Kart özellikleri aşağıdaki şekildedir.</p>
+                        <table style="width:100%">
+                        <tr>
+                        <th>Sipariş Geçmişi ID'si (Order History):</th>
+                        <td>${orderHistory.id}</td>
+                        </tr>
+                        <tr>
+                        <th>Ad Soyad:</th>
+                        <td>${fullname}</td>
+                        </tr>
+                        <tr>
+                        <th>Kart Yönü:</th>
+                        <td>${direction}</td>
+                        </tr>
+                        <tr>
+                        <th>Kart Rengi:</th>
+                        <td>${color}</td>
+                        </tr>
+                        <tr>
+                        <th>Vergi Dairesi:</th>
+                        <td>${taxAdministration}</td>
+                        </tr>
+                        <tr>
+                        <th>Vergi No:</th>
+                        <td>${taxNumber}</td>
+                        </tr>
+                        <tr>
+                        <th>Fatura Adresi:</th>
+                        <td>${billingAddress}</td>
+                        </tr>
+                        <tr>
+                        <th>Teslimat Adresi:</th>
+                        <td>${address}</td>
+                        </tr>
+                        <tr>
+                        <th>Telefon Numarası:</th>
+                        <td>${req.user.phoneNumber}</td>
+                        </tr>
+                        </table>
+                        </body>
+                        </html>
+                        `
+                    });
+                    return res.json({ status: 'success', data: result.threeDSHtmlContent });
                 });
             }
+        });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
+const orderPayment = async (req, res) => {
+    try {
+        const iyzipay = new Iyzipay({
+            apiKey: process.env.IYZICO_APIKEY,
+            secretKey: process.env.IYZICO_SECRETKEY,
+            uri: process.env.IYZICO_URI
+        });
+
+        const { status, mdStatus, conversationId, conversationData, paymentId } = req.body;
+
+        if (status !== 'success' || mdStatus !== '1') {
+            await SendEmail({
+                email: 'orfecard@gmail.com',
+                subject: 'Sipariş Tamamlanmadı',
+                message: `
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <h1>İptal</h1>
+                <p>Sipariş tamamlanmadı.</p>
+                </body>
+                </html>
+                `
+            });
+            return res.json({ status: 'failure' });
+        }
+
+        iyzipay.threedsPayment.create({
+            conversationId,
+            locale: Iyzipay.LOCALE.TR,
+            paymentId,
+            conversationData
+        }, async (err) => {
+            if (err) {
+                await SendEmail({
+                    email: 'orfecard@gmail.com',
+                    subject: 'Sipariş Tamamlanmadı',
+                    message: `
+                    <!DOCTYPE html>
+                    <html>
+                    <body>
+                    <h1>İptal</h1>
+                    <p>Sipariş tamamlanmadı.</p>
+                    </body>
+                    </html>
+                    `
+                });
+                return res.json({ status: 'failure' });
+            }
+            await SendEmail({
+                email: 'orfecard@gmail.com',
+                subject: 'Başarılı Sipariş',
+                message: `
+                <!DOCTYPE html>
+                <html>
+                <body>
+                <h1>Başarılı</h1>
+                <p>Sipariş başarılı bir şekilde alındı.</p>
+                </body>
+                </html>
+                `
+            });
+            return res.json({ status: 'success' });
         });
     } catch (error) {
         console.log(error);
@@ -507,5 +614,6 @@ module.exports = {
     getProfile,
     addToContact,
     sendContactMail,
-    giveOrder
+    giveOrder,
+    orderPayment
 };

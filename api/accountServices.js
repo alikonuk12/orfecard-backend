@@ -21,7 +21,8 @@ const {
     getProfile,
     addToContact,
     sendContactMail,
-    giveOrder
+    giveOrder,
+    orderPayment
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -99,5 +100,9 @@ accountRouter
 accountRouter
     .route('/giveorder')
     .post(protect, giveOrder);
+
+accountRouter
+    .route('/orderpayment')
+    .post(protect, orderPayment);
 
 module.exports = accountRouter;
