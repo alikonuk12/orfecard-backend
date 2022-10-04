@@ -364,7 +364,7 @@ const giveOrder = async (req, res) => {
             });
 
             orderDetailIDs.push(orderDetail.id);
-            basket.push({ id: orderDetail.id, name: product.productName, price: product.price });
+            basket.push({ id: orderDetail.id, name: product.productName, price: product.price, cardId: card.id });
 
             if (index === req.body.cart.length - 1) {
                 const orderHistory = await OrderHistory.create({
@@ -396,6 +396,7 @@ const giveOrder = async (req, res) => {
                     locale: Iyzipay.LOCALE.TR,
                     price: String(Number(req.body.total) * 1.18),
                     paidPrice: String(Number(req.body.total) * 1.18),
+                    conversationId: orderHistory.id,
                     currency: Iyzipay.CURRENCY.TRY,
                     installment: '1',
                     paymentChannel: Iyzipay.PAYMENT_CHANNEL.WEB,
@@ -460,6 +461,13 @@ const giveOrder = async (req, res) => {
                             </html>
                             `
                         });
+
+                        basket.map(async ({ id, cardId }) => {
+                            await Card.findByIdAndDelete(cardId);
+                            await OrderDetail.findByIdAndDelete(id);
+                        });
+
+                        await OrderHistory.findByIdAndDelete(orderHistory.id);
                         return res.json({ status: 'failure' });
                     }
                     await SendEmail({
@@ -525,13 +533,13 @@ const giveOrder = async (req, res) => {
 
 const orderPayment = async (req, res) => {
     try {
+        const { status, mdStatus, conversationId, conversationData, paymentId } = req.body;
+
         const iyzipay = new Iyzipay({
             apiKey: process.env.IYZICO_APIKEY,
             secretKey: process.env.IYZICO_SECRETKEY,
             uri: process.env.IYZICO_URI
         });
-
-        const { status, mdStatus, conversationId, conversationData, paymentId } = req.body;
 
         if (status !== 'success' || mdStatus !== '1') {
             await SendEmail({
@@ -547,6 +555,15 @@ const orderPayment = async (req, res) => {
                 </html>
                 `
             });
+
+            const orderHistory = await OrderHistory.findById(conversationId);
+            orderHistory.orderDetail.map(async (id) => {
+                const orderDetail = await OrderDetail.findById(id);
+                await Card.findByIdAndDelete(orderDetail.card);
+                await OrderDetail.findByIdAndDelete(id);
+            });
+
+            await OrderHistory.findByIdAndDelete(conversationId);
             return res.json({ status: 'failure' });
         }
 
@@ -555,8 +572,8 @@ const orderPayment = async (req, res) => {
             locale: Iyzipay.LOCALE.TR,
             paymentId,
             conversationData
-        }, async (err) => {
-            if (err) {
+        }, async (err, result) => {
+            if (err || result.errorCode) {
                 await SendEmail({
                     email: 'orfecard@gmail.com',
                     subject: 'Sipariş Tamamlanmadı',
@@ -570,6 +587,15 @@ const orderPayment = async (req, res) => {
                     </html>
                     `
                 });
+
+                const orderHistory = await OrderHistory.findById(conversationId);
+                orderHistory.orderDetail.map(async (id) => {
+                    const orderDetail = await OrderDetail.findById(id);
+                    await Card.findByIdAndDelete(orderDetail.card);
+                    await OrderDetail.findByIdAndDelete(id);
+                });
+
+                await OrderHistory.findByIdAndDelete(conversationId);
                 return res.json({ status: 'failure' });
             }
             await SendEmail({
