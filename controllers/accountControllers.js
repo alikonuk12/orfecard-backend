@@ -619,6 +619,27 @@ const orderPayment = async (req, res) => {
     }
 };
 
+const getOrderHistory = async (req, res) => {
+    try {
+        const orderHistory = await OrderHistory
+            .find({ account: req.user.id }, { _id: 0, __v: 0, account: 0, createdAt: 0 })
+            .populate({
+                path: 'orderDetail',
+                select: { _id: 0, __v: 0, account: 0, card: 0, createdAt: 0 },
+                populate: {
+                    path: 'product',
+                    select: { _id: 0, __v: 0, createdAt: 0 }
+                }
+            });
+
+        if (!orderHistory) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: orderHistory });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
 module.exports = {
     signUp,
     login,
@@ -641,5 +662,6 @@ module.exports = {
     addToContact,
     sendContactMail,
     giveOrder,
-    orderPayment
+    orderPayment,
+    getOrderHistory
 };

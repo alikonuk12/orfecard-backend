@@ -22,7 +22,8 @@ const {
     addToContact,
     sendContactMail,
     giveOrder,
-    orderPayment
+    orderPayment,
+    getOrderHistory
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -86,7 +87,7 @@ accountRouter
     .delete(protect, deleteCardDetail);
 
 accountRouter
-    .route('/:profileId')
+    .route('/profile/:profileId')
     .get(getProfile);
 
 accountRouter
@@ -104,5 +105,9 @@ accountRouter
 accountRouter
     .route('/orderpayment')
     .post(protect, orderPayment);
+
+accountRouter
+    .route('/getorderhistory')
+    .get(protect, getOrderHistory)
 
 module.exports = accountRouter;
