@@ -468,7 +468,7 @@ const giveOrder = async (req, res) => {
                         });
 
                         await OrderHistory.findByIdAndDelete(orderHistory.id);
-                        return res.json({ status: 'failure' });
+                        return res.json({ status: 'failure', data: result.errorMessage });
                     }
                     await SendEmail({
                         email: 'orfecard@gmail.com',
