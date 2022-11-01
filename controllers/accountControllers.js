@@ -640,6 +640,56 @@ const getOrderHistory = async (req, res) => {
     }
 };
 
+// FOR ADMIN PANEL
+const getAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const card = await Card.findById(id);
+        if (!card) return res.json({ status: 'failure' });
+        return res.json({ status: 'success', data: card });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
+const updateAccount = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const account = await Account.findByIdAndUpdate(id, { ...req.body, updatedAt: Date.now() }, { new: true });
+        if (!account) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
+const getAllAccounts = async (req, res) => {
+    try {
+        const { page, limit } = req.query;
+        const account = await Account
+            .find(req.query, { _id: 1, email: 1, phoneNumber: 1, role: 1, createdAt: 1 })
+            .limit(limit)
+            .skip((page - 1) * limit);
+        return res.json({ status: 'success', data: account });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
+const postAccount = async (req, res) => {
+    try {
+        const account = await Account.create(req.body);
+        if (!account) return res.json({ status: 'failure' });
+        return res.json({ status: 'success' });
+    } catch (error) {
+        console.log(error);
+        return res.json({ status: 'error' });
+    }
+};
+
 module.exports = {
     signUp,
     login,
@@ -663,5 +713,9 @@ module.exports = {
     sendContactMail,
     giveOrder,
     orderPayment,
-    getOrderHistory
+    getOrderHistory,
+    getAccount,
+    getAllAccounts,
+    updateAccount,
+    postAccount
 };

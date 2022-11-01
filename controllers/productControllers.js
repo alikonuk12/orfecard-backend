@@ -27,7 +27,7 @@ const updateProduct = async (req, res) => {
 const getAllProducts = async (req, res) => {
     try {
         const { page, limit } = req.query;
-        const products = await Product.find(req.query, { _id: 0, productName: 1, price: 1 }).limit(limit).skip((page - 1) * limit);
+        const products = await Product.find(req.query).limit(limit).skip((page - 1) * limit);
         return res.json({ status: 'success', data: products });
     } catch (error) {
         console.log(error);

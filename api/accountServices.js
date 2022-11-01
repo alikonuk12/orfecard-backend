@@ -12,6 +12,7 @@ const {
     deleteUser,
     logout,
     protect,
+    restrictTo,
     getCard,
     getCardDetail,
     createCardDetail,
@@ -23,7 +24,11 @@ const {
     sendContactMail,
     giveOrder,
     orderPayment,
-    getOrderHistory
+    getOrderHistory,
+    getAccount,
+    getAllAccounts,
+    updateAccount,
+    postAccount
 } = require('../controllers/accountControllers');
 
 accountRouter
@@ -108,6 +113,16 @@ accountRouter
 
 accountRouter
     .route('/getorderhistory')
-    .get(protect, getOrderHistory)
+    .get(protect, getOrderHistory);
+
+accountRouter
+    .route('/admin')
+    .get(protect, restrictTo('Admin'), getAllAccounts)
+    .post(protect, restrictTo('Admin'), postAccount);
+
+accountRouter
+    .route('/admin/:id')
+    .get(protect, restrictTo('Admin'), getAccount)
+    .put(protect, restrictTo('Admin'), updateAccount);
 
 module.exports = accountRouter;

@@ -16,13 +16,13 @@ const orderHistorySchema = new mongoose.Schema({
         required: [true, 'Price field is required']
     },
     status: {
-        type: String,
+        type: Number,
         required: [true, 'Status field is required'],
         enum: {
-            values: ['İşleme alındı', 'Kargoya verildi'],
+            values: [0, 1, 2],
             message: 'This type cannot be given'
         },
-        default: 'İşleme alındı'
+        default: '0'
     },
     createdAt: {
         type: Date,
